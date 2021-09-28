@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+
+    <title>스파르타코딩클럽 | 부트스트랩 연습하기</title>
+    
+    <script>
+
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const postId = urlParams.get("postId");
+    const postTitle = $("#title-input").val();
+    const postContent = $("#content-area").val();
+    
+
+    
+      function get_detail() {
+        $.ajax({
+          type: "GET",
+          url: `/post/${postID}`,
+          data: {},
+          error: function(xhr, status, error) {
+            if (status == 404) {
+              alert("존재하지 않는 상품입니다.");
+            }
+            window.location.href = "/main_page";
+          },
+          success: function(response) {//내려주는 함수
+            let postDetail = response["detail"];
+            $("#post_title").text(postDetail["postTitle"]);
+            $("#post_name").text(postDetail["postWriter"]);
+            $("#post_date").text(postDetail["postDate"]);
+            $("#post_content").text(postDetail["postContent"]);
+          }
+        })
+
+        const toList = () => {
+          window.location.href = "/main_page";
+        }
+
+      }
+////
+
+function deleteContent(postID) {
+  const postPassword = $('#password-input').val();
+
+// console.log("postPassword: ", postPassword);
+            // 비밀번호가 안 적혀있을 경우
+            if (postPassword.length < 4) {
+                alert("비밀번호 4자리를 입력해주세요.");
+                $('#password-input').focus();
+                return;
+            }
+            $.ajax({
+                type: "DELETE",
+                url: `/api/post/delete/${postID}`,
+                data: {
+                    postPassword: postPassword
+                },
+                success: function (response) {
+                    alert(response['msg']);
+                    if (response['result']) {
+                        location.href = '/main_page'
+                    } else {
+                        window.location.reload();
+                    }
+                }
+            })
+        }
+        function toModifyPage(postID) {
+          console.log("posdid",{postID})
+            location.href = `/modify/${postID}`;
+        }
+      </script>  
+
+
+        <!-- // function toModifyPage(postID) {
+        //   console.log('A0000000000000000000')
+        //     location.href = `/modify`;
+        //   console.log('B0000000000000000000')
+        // }     
+        // function modifyContent(postID) {
+        //     const postTitle = $("#title-input").val();
+        //     const postContent = $("#content-area").val();
+        //     const postPassword = $("#password-input").val();
+        //     // 비밀번호가 안 적혀있을 경우
+        //     if (postPassword.length < 4) {
+        //         alert("비밀번호 4자리를 입력해주세요.");
+        //         $('#password-input').focus();
+        //         return;
+        //     }
+        //     $.ajax({
+        //         type: "PUT",
+        //         url: `/api/post/modify/${postID}`,
+        //         data: {
+        //             postTitle: postTitle,
+        //             postContent: postContent,
+        //             postPassword: postPassword,
+        //         },
+        //         success: function (response) {
+        //             alert(response['msg']);
+        //             if (response['result']) {
+        //                 location.href = '/'
+        //             } else {
+        //                 window.location.reload();
+        //             }
+        //         }
+        //     })
+        // } -->
+    
+    
+  
+
+
+
+    <!-- 스타일시작 -->
+    <style type="text/css">
+      a:link { color: red; text-decoration: none;}
+      a:visited { color: black; text-decoration: none;}
+      a:hover { color: rgb(187, 187, 190); text-decoration: underline;}
+
+    </style>
+    
+    <!-- 스크립트 시작 -->
+
+
+</head>
+
+<body>
+  
+    <h1>상세페이지!</h1>
+    <div class="container">
+
+      <h2>제목<input value="<%= detailPost[0].postTitle%>"disabled/></h2>
+      <h2>내용<input value="<%= detailPost[0].postContent%>"disabled/></h2>
+      <h2>작성자<input value="<%= detailPost[0].postWriter%>"disabled/></h2>
+      <h2>작성날짜<input value="<%= detailPost[0].postDate%>"disabled/></h2>
+      <span>비밀번호: <input id="password-input" type="password" placeholder="4자리" maxlength="4"></span>
+      </div>
+<!-- "modifyContent('<%=detailPost[0].postID %>')" -->
+    <div style="margin-top : 20px">
+				<button type="button" class="btn btn-sm btn-primary" onclick="toModifyPage('<%=detailPost[0].postID %>')">수정</a></button>
+				<button type="button" class="btn btn-sm btn-primary"><a href="/main_page">목록</a></button>
+        <button id="delete-btn" onclick="deleteContent('<%=detailPost[0].postID%>')" type="button"
+                        class="btn btn-success delete-btn">삭제하기</button></div>
+  
+</body>
+      
+</html>
